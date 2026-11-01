@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.tsbuildinfo
+test-results/
+playwright-report/
+artifacts/
+*.tmp.mjs
+.env*
+!.env.example
+.vercel/
+.DS_Store

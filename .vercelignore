@@ -1,0 +1,9 @@
+node_modules
+dist
+artifacts
+test-results
+playwright-report
+*.tmp.mjs
+*.tsbuildinfo
+.env*
+.DS_Store

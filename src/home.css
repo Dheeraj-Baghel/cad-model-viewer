@@ -1,0 +1,25 @@
+/* Homepage only: restore right-hand Axis-1 motor, text on the left. Exploded
+ * callouts stay visible through the final chapter and follow real component poses.
+ * These rules deliberately do not touch viewer, collection or saved appearance. */
+.story-mode .story-callouts{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:clamp(0,calc(1 - var(--footer-rise,0px)/180px),1)}
+.story-mode .story-leaders{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none}
+.story-mode .story-leaders path{fill:none;stroke:#91a9c3;stroke-width:1;stroke-opacity:.7}
+.story-mode .story-leaders circle{fill:#ffb15c;stroke:#1b222a;stroke-width:1}
+.story-mode .story-callouts .scene-label{display:flex;align-items:center;gap:7px;min-height:30px;padding:7px 9px;border:1px solid #526579;border-radius:5px;background:rgb(17 23 31 / 94%);color:#edf3fa;font:11px/1.2 var(--mono);text-align:left;white-space:nowrap;pointer-events:auto;box-shadow:0 4px 16px #0003}
+.story-mode .story-callouts .scene-label::before{display:none}
+.story-mode .story-callouts .scene-label>span{flex-shrink:0;width:5px;height:5px;border-radius:50%;border:0;background:#ffb15c}
+.story-mode .story-callouts .scene-label:hover{border-color:#ffb15c;background:#29313b}
+@media(max-width:760px){.story-mode .story-callouts .scene-label{font-size:10px;min-height:30px;padding:7px}.story-mode .story-leaders path{stroke-opacity:.55}}
+/* Intermediate screens reserve a top editorial band rather than squeezing the
+ * motor into a sliver beside 420px copy. Desktop stays motor-right/text-left. */
+@media(min-width:761px) and (max-width:1050px){
+ .story-mode .landing:not(.reduced-story) .chapter-copy,.story-mode .landing:not(.reduced-story) .chapter-copy.is-active{top:106px;left:32px;right:32px;width:auto;max-width:none;transform:none}
+ .story-mode .chapter-copy h1,.story-mode .chapter-copy h2{font-size:38px}
+ .story-mode .chapter-copy p{font-size:14px;margin-top:10px;max-width:65ch}
+ .story-mode .chapter-copy h1>span,.story-mode .chapter-copy h2>span{display:inline}
+ .story-mode .chapter-copy h1>span+span::before,.story-mode .chapter-copy h2>span+span::before{content:' '}
+ .story-mode .chapter-copy .story-cta{margin-top:12px}
+ .story-mode .scroll-invitation{display:none}
+ .story-mode .spec-grid{margin-top:10px}
+}
+@media(prefers-reduced-motion:reduce){.story-mode .story-callouts *{transition:none}}

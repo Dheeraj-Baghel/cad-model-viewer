@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "sampleId": "train",
+  "title": "Electric city train",
+  "description": "Four separate meshes with MTL and local PNG companions. Source units are unspecified; displayed in mm as an explicit assumption, not real train dimensions.",
+  "sourceUrl": "https://kenney.nl/assets/train-kit",
+  "exactAssetUrl": "https://kenney.nl/media/pages/assets/train-kit/cf8521d625-1727040883/kenney_train-kit.zip",
+  "downloaded": "2026-10-24",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "redistribution": "CC0 assets may be used, modified and redistributed including commercially; attribution not required. Project-authored Axis-1 additions are bundled as part of this project, not third-party reference assets.",
+  "attribution": "Kenney Train Kit 1.1; additional credits Guus Vermeulen and Tony Schaer. Attribution voluntary.",
+  "files": [
+    {
+      "url": "/samples/train/train-electric-city-a.obj",
+      "bytes": 84233,
+      "sha256": "47682d75a874cb928a9c7a8a8e8f42bf648e01dc20d1d3937d5d54ac8f50afa1"
+    },
+    {
+      "url": "/samples/train/train-electric-city-a.mtl",
+      "bytes": 98,
+      "sha256": "45a6736aa344a0c7e286b9c43c6a48f25b6a2f78d8c5949e430c3b4a93b4e060"
+    },
+    {
+      "url": "/samples/train/colormap.png",
+      "bytes": 12684,
+      "sha256": "e264660f3fc9ecbd642bdb7fb7b7dc10755a061560a66651baf48274c729af09"
+    }
+  ],
+  "acceptance": {
+    "actualBrowser": "Chrome using existing app import pipeline",
+    "loadMs": 292,
+    "parts": 4,
+    "triangles": 1628,
+    "boundsMm": [
+      1.1,
+      1.68,
+      2.48
+    ],
+    "orientation": "Auto preserves source axes; no guessed STEP up",
+    "sourceUnits": "Unspecified OBJ units, mm assumption; not real train size",
+    "textures": true,
+    "separateComponents": true,
+    "sourceUnchanged": true
+  },
+  "limits": "Illustrative only. No load rating, physical tolerances, joint motion or exact B-rep measurement claim."
+}

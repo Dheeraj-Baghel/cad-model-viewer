@@ -1,0 +1,30 @@
+import { describe,it,expect } from 'vitest';
+import * as THREE from 'three';
+import { IDBFactory } from 'fake-indexeddb';
+import {zipSync,strToU8} from 'fflate';
+import {parseRoute} from './navigation';
+import {SaveQueue} from './library/saveQueue';
+import {checkedEntries,ARCHIVE_LIMIT} from './library/archive';
+import {LibraryRepository,fileReferences,planBackupParts} from './library/repository';
+import {sampleRecord} from './library/state';
+import {SAMPLES} from './library/catalog';
+import {validateRecord,validCamera,validInspection} from './library/validation';
+import {createDemo,disposeModel} from './model';
+import {normalizeAssembly} from './presentation/assemblyAdapter';
+import {ExplosionController} from './presentation/ExplosionController';
+import {featuredExplosionMetadata} from './presentation/featuredAssembly';
+import {StoryCameraController,storySafeRect,projectBox} from './presentation/CameraController';
+describe('audit corrections',()=>{
+ it('parses explicit routes including malformed/unknown fragment fallbacks',()=>{for(const chapter of ['whole','inside','parts','detail','overview','explore'])expect(parseRoute(`#${chapter}`)).toEqual({kind:'story',chapter});expect(parseRoute('#/explore').kind).toBe('collection');expect(parseRoute('#viewer').kind).toBe('viewer');expect(parseRoute('#/m/a%20b')).toEqual({kind:'model',id:'a b'});expect(parseRoute('#/m/%zz').kind).toBe('story');expect(parseRoute('#unknown').kind).toBe('story');});
+ it('awaitable queue coalesces new edits and navigation waits for latest write',async()=>{const q=new SaveQueue(),writes:number[]=[];let release!:()=>void;const delayed=new Promise<void>(r=>release=r);const first=q.enqueue(async()=>{await delayed;writes.push(1);});q.enqueue(async()=>{writes.push(2);});const navigation=q.enqueue(async()=>{writes.push(3);});expect(writes).toEqual([]);release();await navigation;await first;expect(writes).toEqual([1,3]);});
+ it('queue propagates failure then accepts retry',async()=>{const q=new SaveQueue();await expect(q.enqueue(async()=>{throw new Error('quota');})).rejects.toThrow('quota');let saved=false;await q.enqueue(async()=>{saved=true;});expect(saved).toBe(true);});
+ it('rejects invalid camera/state and merged metadata',async()=>{expect(validCamera({projection:'orthographic',position:[1,1,1],target:[0,0,0],up:[0,1,0],zoom:-1,orthoHeight:10,fov:30})).toBe(false);expect(validInspection({version:1})).toBe(false);const r=sampleRecord(SAMPLES[1]);expect(validateRecord(r)).toBe(true);expect(validateRecord({...r,orientation:'wrong'})).toBe(false);});
+ it('parses a real ZIP directory, rejects arbitrary paths, encryption and truncated directory',()=>{const ok=zipSync({'manifest.json':strToU8('{}')},{level:0});expect(checkedEntries(ok)['manifest.json']).toBeDefined();expect(()=>checkedEntries(ok.subarray(0,ok.length-1))).toThrow();expect(()=>checkedEntries(zipSync({'../escape':strToU8('x'),'manifest.json':strToU8('{}')}))).toThrow('entry');const bad=ok.slice(),d=new DataView(bad.buffer);d.setUint16(6,1,true);expect(()=>checkedEntries(bad)).toThrow();});
+ it('split planner keeps a >160MB collection in independently restorable parts',()=>{const records=Array.from({length:6},(_,i)=>({...sampleRecord(SAMPLES[1]),id:String(i),totalBytes:34*1024*1024}));const parts=planBackupParts(records);expect(parts).toHaveLength(2);expect(parts.flat()).toHaveLength(6);for(const ids of parts)expect(ids.length*34*1024*1024).toBeLessThan(ARCHIVE_LIMIT);});
+ it('normal backups exclude retained undo orphans',async()=>{const old=globalThis.indexedDB;globalThis.indexedDB=new IDBFactory();const repo=new LibraryRepository();try{const f=await fileReferences([new File(['orphan'],'a.obj')]);await repo.save({...sampleRecord(SAMPLES[1]),files:f.refs,kind:'import',id:'deleted',sourceHash:f.sourceHash,totalBytes:6},f.blobs);await repo.remove('deleted');expect(await repo.usage()).toBe(6);const zip=await repo.backup();expect(Object.keys(checkedEntries(new Uint8Array(await zip.arrayBuffer())))).toEqual(['manifest.json']);}finally{repo.close();globalThis.indexedDB=old;}});
+ it('merged updates validate and healthy entries survive a quarantined entry',async()=>{const old=globalThis.indexedDB;globalThis.indexedDB=new IDBFactory();const repo=new LibraryRepository();try{const r=sampleRecord(SAMPLES[1]);await repo.save(r);await expect(repo.update(r.id,{orientation:'invalid' as any})).rejects.toThrow();expect((await repo.get(r.id)).orientation).toBe('auto');const db=await repo.open(),t=db.transaction('models','readwrite');t.objectStore('models').put({...r,id:'corrupt',version:99});await new Promise(r=>t.oncomplete=r);expect(await repo.list()).toHaveLength(1);expect(repo.quarantined).toBe(1);}finally{repo.close();globalThis.indexedDB=old;}});
+ it('all eight posed overview corners remain within safe rect at audit breakpoints',()=>{const m=createDemo(),assembly=normalizeAssembly(m),explode=new ExplosionController(),camera=new StoryCameraController();explode.initialize(assembly,featuredExplosionMetadata(m));camera.initialize(assembly);
+  for(const[w,h]of [[390,844],[768,904],[779,904],[1024,768],[1280,720],[1440,900]])for(const p of [0,.25,.5,.85,.9,.97,1]){explode.applyProgress(p);m.group.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(m.group),safe=storySafeRect(w,h),pose=camera.evaluate(p,{width:w,height:h},safe,box),c=new THREE.PerspectiveCamera(pose.fov,w/h,pose.near,pose.far);c.position.copy(pose.position);c.quaternion.copy(pose.quaternion);c.setViewOffset(w,h,pose.viewOffset.x,pose.viewOffset.y,w,h);c.updateMatrixWorld(true);for(const v of projectBox(box,c,w,h)){expect(v.x).toBeGreaterThanOrEqual(safe.x);expect(v.x).toBeLessThanOrEqual(safe.x+safe.width);expect(v.y).toBeGreaterThanOrEqual(safe.y);expect(v.y).toBeLessThanOrEqual(safe.y+safe.height);}}
+  explode.dispose();camera.dispose();disposeModel(m);
+ });
+});

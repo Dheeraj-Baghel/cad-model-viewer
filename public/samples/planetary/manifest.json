@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "sampleId": "planetary",
+  "title": "Open planetary gearbox",
+  "description": "Ten separate components: three planets, washers, a ring, sun, carrier and case. Inspect nested gears with X-ray or a clipping plane.",
+  "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/three-planet-4-1-gearbox-open-assembly-2dfb48c4",
+  "exactAssetUrl": "https://www.innerscene.com/api/library/three-planet-4-1-gearbox-open-assembly-2dfb48c4/download",
+  "downloaded": "2026-10-24",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "redistribution": "CC0 assets may be used, modified and redistributed including commercially; attribution not required. Project-authored Axis-1 additions are bundled as part of this project, not third-party reference assets.",
+  "attribution": "Innerscene — original model. Attribution voluntary; redistribution permitted.",
+  "files": [
+    {
+      "url": "/samples/planetary/planetary.step",
+      "bytes": 6433319,
+      "sha256": "6aa79457b337fe3f649789c63b1ae3eb8da0e91f119228155ef0030e34262bd6"
+    }
+  ],
+  "acceptance": {
+    "actualBrowser": "Chrome using existing app import pipeline",
+    "loadMs": 3549,
+    "parts": 10,
+    "triangles": 13398,
+    "boundsMm": [
+      107.918,
+      107.959,
+      31.5
+    ],
+    "orientation": "Auto preserves source axes; no guessed STEP up",
+    "sourceUnits": "mm",
+    "textures": false,
+    "separateComponents": true,
+    "sourceUnchanged": true
+  },
+  "limits": "Illustrative only. No load rating, physical tolerances, joint motion or exact B-rep measurement claim."
+}

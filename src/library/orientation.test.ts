@@ -1,0 +1,15 @@
+import { describe, it, expect } from 'vitest';
+import * as THREE from 'three';
+import type { Model } from '../model';
+import { applyOrientation, orientedBounds, orientationMatrix } from './orientation';
+import { createMeasurement, measurePoint } from '../workspace/measure';
+import { partKeys } from './state';
+function model():Model { const group=new THREE.Group();const parts=['one','two'].map((id,i)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(10,20,30),new THREE.MeshStandardMaterial());mesh.position.set(i*50,0,0);group.add(mesh);return{id,name:id,mesh,origin:mesh.position.clone(),rotation:mesh.rotation.clone(),explode:new THREE.Vector3(0,40,0),material:'',color:'',stage:'',description:''};});return {name:'fixture',source:'STEP',parts,group,size:new THREE.Vector3(60,20,30),triangles:24,demo:false};}
+describe('root orientation and source-relative measurements',()=>{
+ it('Auto preserves imported orientation with no guessed STEP metadata',()=>{const m=model();expect(orientationMatrix(m).equals(new THREE.Matrix4())).toBe(true);applyOrientation(m,'auto');expect(m.group.quaternion.toArray()).toEqual([0,0,0,1]);});
+ it('Auto uses explicit certified source metadata when available',()=>{const m=model();m.sourceUp='z';applyOrientation(m,'auto');expect(m.group.quaternion.x).toBeCloseTo(-Math.sqrt(.5));});
+ it('rotates one root, never geometry or relative component transforms',()=>{const m=model(),geometry=m.parts.map(p=>[...p.mesh.geometry.attributes.position.array]),placements=m.parts.map(p=>p.mesh.position.toArray());for(let i=0;i<20;i++){applyOrientation(m,'z');applyOrientation(m,'y');applyOrientation(m,'auto');}expect(m.parts.map(p=>[...p.mesh.geometry.attributes.position.array])).toEqual(geometry);expect(m.parts.map(p=>p.mesh.position.toArray())).toEqual(placements);expect(m.group.quaternion.toArray()).toEqual([0,0,0,1]);});
+ it('bounds and axis coordinates follow root orientation without changing distances',()=>{const m=model();const a=measurePoint(m,'one',new THREE.Vector3(0,10,0))!,b=measurePoint(m,'two',new THREE.Vector3(0,0,10))!,distance=createMeasurement(a,b,1).distance;applyOrientation(m,'z');const after=createMeasurement(measurePoint(m,'one',new THREE.Vector3(0,10,0))!,measurePoint(m,'two',new THREE.Vector3(0,0,10))!,1);expect(after.distance).toBeCloseTo(distance,8);expect(after.a.assembled[2]).toBeCloseTo(-10);const size=orientedBounds(m).getSize(new THREE.Vector3());expect(size.y).toBeCloseTo(30);expect(size.z).toBeCloseTo(20);});
+ it('measured distance and assembled bounds exclude explosion offsets',()=>{const m=model();applyOrientation(m,'z');const before=orientedBounds(m).getSize(new THREE.Vector3());m.parts[1].mesh.position.y+=1000;expect(orientedBounds(m).getSize(new THREE.Vector3())).toEqual(before);expect(measurePoint(m,'two',new THREE.Vector3())!.assembled[0]).toBeCloseTo(50);});
+ it('stable part keys do not change with model rename or orientation',()=>{const m=model(),keys=partKeys(m);m.name='renamed';applyOrientation(m,'z');expect(partKeys(m)).toEqual(keys);});
+});

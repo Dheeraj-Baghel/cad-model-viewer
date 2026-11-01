@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "sampleId": "bevel",
+  "title": "Right-angle bevel gearbox",
+  "description": "A 21-component housing with radial seals, machined carriers, shaft interfaces and separate screws. Useful for tree, visibility and section inspection.",
+  "sourceUrl": "https://www.innerscene.com/tools/library/3d-parts/bevel-gearbox-8f8cea23",
+  "exactAssetUrl": "https://www.innerscene.com/api/library/bevel-gearbox-8f8cea23/download",
+  "downloaded": "2026-10-24",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "redistribution": "CC0 assets may be used, modified and redistributed including commercially; attribution not required. Project-authored Axis-1 additions are bundled as part of this project, not third-party reference assets.",
+  "attribution": "Innerscene — original model. Attribution voluntary; redistribution permitted.",
+  "files": [
+    {
+      "url": "/samples/bevel/bevel.step",
+      "bytes": 872670,
+      "sha256": "affa690e2b60f541b38bbdb8961691f1398ff3fd0b368b18a6544dcc162e335f"
+    }
+  ],
+  "acceptance": {
+    "actualBrowser": "Chrome using existing app import pipeline",
+    "loadMs": 1108,
+    "parts": 21,
+    "triangles": 9318,
+    "boundsMm": [
+      143.1,
+      143.1,
+      98
+    ],
+    "orientation": "Auto preserves source axes; no guessed STEP up",
+    "sourceUnits": "mm",
+    "textures": false,
+    "separateComponents": true,
+    "sourceUnchanged": true
+  },
+  "limits": "Illustrative only. No load rating, physical tolerances, joint motion or exact B-rep measurement claim."
+}
