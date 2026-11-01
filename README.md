@@ -1,6 +1,10 @@
 # CADmium — precision, from every angle
 
-A continuous mechanical assembly story and local CAD inspection workspace, evolved from this project's earlier FORMA viewer. React + strict TypeScript + Three.js + GSAP ScrollTrigger. **[Open CADmium](http://127.0.0.1:4326)** · **[Open viewer directly](http://127.0.0.1:4326/#viewer)**.
+A continuous mechanical assembly story and local CAD inspection workspace, evolved from this project's earlier FORMA viewer. React + strict TypeScript + Three.js + GSAP ScrollTrigger.
+
+**[Open live CADmium](https://cad-model-viewer.vercel.app)** · **[Open the live viewer](https://cad-model-viewer.vercel.app/#viewer)** · **[Private GitHub source](https://github.com/Dheeraj-Baghel/cad-model-viewer)**
+
+The Vercel project is connected to GitHub `main` for automatic production deployments. Node 24, deterministic `npm ci`, 80 unit tests, strict build, clean audit, cloud build and an 8-check hosted browser smoke pass are verified. See [deployment and safe-update notes](DEPLOYMENT.md).
 
 ## Design and story
 
